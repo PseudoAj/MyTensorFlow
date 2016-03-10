@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-H = 50
+H = 100
 BATCH_SIZE = 100
 DROP_OUT_RATE = 0.5
 
@@ -31,14 +31,15 @@ b1 = bias_variable([H])
 
 # Hidden Layer: h
 # softsign(x) = x / (abs(x)+1); https://www.google.co.jp/search?q=x+%2F+(abs(x)%2B1)
-h = tf.nn.softsign(tf.matmul(x, W) + b1)
+h = tf.nn.softmax(tf.matmul(x, W) + b1)
 keep_prob = tf.placeholder("float")
-h_drop = tf.nn.dropout(h, keep_prob)
+#h_drop = tf.nn.dropout(h, keep_prob)
 
 # Variable: b2
 W2 = tf.transpose(W)  # 転置
 b2 = bias_variable([784])
-y = tf.nn.relu(tf.matmul(h_drop, W2) + b2)
+#y = tf.nn.relu(tf.matmul(h_drop, W2) + b2)
+y = tf.nn.relu(tf.matmul(h, W2) + b2)
 
 # Define Loss Function
 loss = tf.nn.l2_loss(y - x) / BATCH_SIZE
@@ -80,7 +81,8 @@ for row in range(N_ROW):
         # Draw Input Data(x)
         plt.subplot(2*N_ROW, N_COL, 2*row*N_COL+col+1)
         plt.title('IN:%02d' % i)
-        plt.imshow(data.reshape((28, 28)), cmap="magma", clim=(0, 1.0), origin='upper')
+        #plt.imshow(data.reshape((28, 28)), cmap=magma, clim=(0, 1.0), origin='upper')
+        plt.imshow(data.reshape((28, 28)), clim=(0, 1.0), origin='upper')
         plt.tick_params(labelbottom="off")
         plt.tick_params(labelleft="off")
 
@@ -88,7 +90,8 @@ for row in range(N_ROW):
         plt.subplot(2*N_ROW, N_COL, 2*row*N_COL + N_COL+col+1)
         plt.title('OUT:%02d' % i)
         y_value = y.eval(session=sess, feed_dict={x: data, keep_prob: 1.0})
-        plt.imshow(y_value.reshape((28, 28)), cmap="magma", clim=(0, 1.0), origin='upper')
+        #plt.imshow(y_value.reshape((28, 28)), cmap=magma, clim=(0, 1.0), origin='upper')
+        plt.imshow(y_value.reshape((28, 28)), clim=(0, 1.0), origin='upper')
         plt.tick_params(labelbottom="off")
         plt.tick_params(labelleft="off")
 
