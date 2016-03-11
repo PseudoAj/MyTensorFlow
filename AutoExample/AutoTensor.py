@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-H = 100
+H = 120
 BATCH_SIZE = 100
 DROP_OUT_RATE = 0.5
 

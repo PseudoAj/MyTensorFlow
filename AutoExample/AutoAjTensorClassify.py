@@ -41,17 +41,26 @@ b2 = bias_variable([784])
 y = tf.nn.relu(tf.matmul(h, W2) + b2)
 #y = tf.nn.softmax(tf.matmul(h, W2) + b2)
 
+#Classify
+Wo=tf.Variable(tf.zeros([784,10]))
+bo=tf.Variable(tf.zeros([10]))
+
+out=tf.nn.softmax(tf.matmul(y,Wo)+bo)
+cOut=tf.placeholder(tf.float32,[None,10])
+
+cross_entropy=-tf.reduce_sum(cOut*tf.log(out))
 # Define Loss Function
-loss = tf.nn.l2_loss(y - x) / BATCH_SIZE
+#loss = tf.nn.l2_loss(y - x) / BATCH_SIZE
 #loss = tf.nn.l2_loss(x*tf.log(y)) / BATCH_SIZE
 
 #loss=-tf.reduce_sum(x*tf.log(y))
 
 # For tensorboard learning monitoring
-tf.scalar_summary("l2_loss", loss)
+tf.scalar_summary("l2_loss",cross_entropy )
 
 # Use Adam Optimizer
-train_step = tf.train.AdamOptimizer().minimize(loss)
+#train_step = tf.train.AdamOptimizer().minimize(loss)
+train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
 
 # Prepare Session
 init = tf.initialize_all_variables()
@@ -61,6 +70,15 @@ summary_writer = tf.train.SummaryWriter('summary/l2_loss', graph_def=sess.graph_
 
 # Training
 for step in range(60000):
+    batch_xs, batch_ys=mnist.train.next_batch(100)
+    sess.run(train_step,feed_dict={x:batch_xs,cOut:batch_ys})
+#Compare the output 
+correct_prediction=tf.equal(tf.argmax(out,1),tf.argmax(cOut,1))
+#Derive the accuracy
+accuracy=tf.reduce_mean(tf.cast(correct_prediction,"float"))
+#Print the results
+print sess.run(accuracy, feed_dict={x: mnist.test.images, cOut: mnist.test.labels})
+"""
     batch_xs, batch_ys = mnist.train.next_batch(BATCH_SIZE)
     sess.run(train_step, feed_dict={x: batch_xs})
     # Collect Summary
@@ -108,3 +126,4 @@ for row in range(N_ROW):
 
 plt.savefig("result.png")
 plt.show()
+"""

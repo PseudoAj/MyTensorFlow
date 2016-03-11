@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-H = 120
+H = 10
 BATCH_SIZE = 100
 #DROP_OUT_RATE = 0.5
 
@@ -60,7 +60,7 @@ sess.run(init)
 summary_writer = tf.train.SummaryWriter('summary/l2_loss', graph_def=sess.graph_def)
 
 # Training
-for step in range(60000):
+for step in range(2000):
     batch_xs, batch_ys = mnist.train.next_batch(BATCH_SIZE)
     sess.run(train_step, feed_dict={x: batch_xs})
     # Collect Summary
@@ -76,7 +76,7 @@ for step in range(60000):
 #accuracy=correct_prediction
 #Print the results
 #print sess.run(accuracy, feed_dict={x: mnist.test.images})
-
+"""
 # Draw Encode/Decode Result
 N_COL = 10
 N_ROW = 2
@@ -107,4 +107,14 @@ for row in range(N_ROW):
         plt.tick_params(labelleft="off")
 
 plt.savefig("result.png")
+plt.show()
+"""
+plt.figure()
+batch_xs, _ = mnist.train.next_batch(3)
+data = batch_xs[2]
+
+h_value = W.eval(session=sess, feed_dict={x: data})
+#plt.imshow(y_value.reshape((28, 28)), cmap=magma, clim=(0, 1.0), origin='upper')
+plt.imshow(h_value.reshape((28, 28)), clim=(0, 1.0), origin='upper')
+#plt.imshow(y_value.reshape((28, 28)))
 plt.show()
