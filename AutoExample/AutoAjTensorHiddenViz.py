@@ -9,7 +9,7 @@ import csv
 from collections import defaultdict
 
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-H = 10
+H = 20
 BATCH_SIZE = 100
 #DROP_OUT_RATE = 0.5
 
@@ -63,7 +63,7 @@ sess.run(init)
 summary_writer = tf.train.SummaryWriter('summary/l2_loss', graph_def=sess.graph_def)
 
 # Training
-for step in range(40000):
+for step in range(5000):
     batch_xs, batch_ys = mnist.train.next_batch(BATCH_SIZE)
     sess.run(train_step, feed_dict={x: batch_xs})
     # Collect Summary
@@ -78,7 +78,7 @@ for step in range(40000):
 
 data = numpy.genfromtxt('weights.csv',delimiter=',', dtype = float)
 i=0
-while (i <=9) :
+while (i <=19) :
 
     plt.imshow(data[:,i].reshape((28, 28)), clim=(-1, 1.0), origin='upper')
     plt.savefig("Fig"+str(i)+".png")
