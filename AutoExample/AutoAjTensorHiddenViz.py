@@ -4,7 +4,9 @@
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 import matplotlib.pyplot as plt
-
+import numpy
+import csv
+from collections import defaultdict
 
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 H = 10
@@ -49,8 +51,9 @@ loss = tf.nn.l2_loss(y - x) / BATCH_SIZE
 
 # For tensorboard learning monitoring
 tf.scalar_summary("l2_loss", loss)
-
+#tf.scalar_summary("W_loss", y)
 # Use Adam Optimizer
+#print ','.join(W)
 train_step = tf.train.AdamOptimizer().minimize(loss)
 
 # Prepare Session
@@ -60,61 +63,24 @@ sess.run(init)
 summary_writer = tf.train.SummaryWriter('summary/l2_loss', graph_def=sess.graph_def)
 
 # Training
-for step in range(2000):
+for step in range(40000):
     batch_xs, batch_ys = mnist.train.next_batch(BATCH_SIZE)
     sess.run(train_step, feed_dict={x: batch_xs})
     # Collect Summary
     summary_op = tf.merge_all_summaries()
     summary_str = sess.run(summary_op, feed_dict={x: batch_xs})
+    weight_values = sess.run(W)
+    numpy.savetxt("weights.csv", weight_values, delimiter=",")
     summary_writer.add_summary(summary_str, step)
     # Print Progress
     if step % 100 == 0:
         print(loss.eval(session=sess, feed_dict={x: batch_xs}))
-#orrect_prediction=tf.equal(tf.argmax(y,1),tf.argmax(x,1))
-#Derive the accuracy
-#accuracy=(tf.cast(correct_prediction,"float"))
-#accuracy=correct_prediction
-#Print the results
-#print sess.run(accuracy, feed_dict={x: mnist.test.images})
-"""
-# Draw Encode/Decode Result
-N_COL = 10
-N_ROW = 2
-plt.figure(figsize=(N_COL, N_ROW*2.5))
-batch_xs, _ = mnist.train.next_batch(N_COL*N_ROW)
-for row in range(N_ROW):
-    for col in range(N_COL):
-        i = row*N_COL + col
-        data = batch_xs[i:i+1]
 
-        # Draw Input Data(x)
-        plt.subplot(2*N_ROW, N_COL, 2*row*N_COL+col+1)
-        plt.title('IN:%02d' % i)
-        #plt.imshow(data.reshape((28, 28)), cmap=magma, clim=(0, 1.0), origin='upper')
-        plt.imshow(data.reshape((28, 28)), clim=(0, 1.0), origin='upper')
-        #plt.imshow(data.reshape((28, 28)))
-        plt.tick_params(labelbottom="off")
-        plt.tick_params(labelleft="off")
+data = numpy.genfromtxt('weights.csv',delimiter=',', dtype = float)
+i=0
+while (i <=9) :
 
-        # Draw Output Data(y)
-        plt.subplot(2*N_ROW, N_COL, 2*row*N_COL + N_COL+col+1)
-        plt.title('OUT:%02d' % i)
-        y_value = y.eval(session=sess, feed_dict={x: data})
-        #plt.imshow(y_value.reshape((28, 28)), cmap=magma, clim=(0, 1.0), origin='upper')
-        plt.imshow(y_value.reshape((28, 28)), clim=(0, 1.0), origin='upper')
-        #plt.imshow(y_value.reshape((28, 28)))
-        plt.tick_params(labelbottom="off")
-        plt.tick_params(labelleft="off")
-
-plt.savefig("result.png")
-plt.show()
-"""
-plt.figure()
-batch_xs, _ = mnist.train.next_batch(3)
-data = batch_xs[2]
-
-h_value = W.eval(session=sess, feed_dict={x: data})
-#plt.imshow(y_value.reshape((28, 28)), cmap=magma, clim=(0, 1.0), origin='upper')
-plt.imshow(h_value.reshape((28, 28)), clim=(0, 1.0), origin='upper')
-#plt.imshow(y_value.reshape((28, 28)))
-plt.show()
+    plt.imshow(data[:,i].reshape((28, 28)), clim=(-1, 1.0), origin='upper')
+    plt.savefig("Fig"+str(i)+".png")
+    plt.show()
+    i=i+1    
