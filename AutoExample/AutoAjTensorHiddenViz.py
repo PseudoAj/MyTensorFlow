@@ -63,7 +63,7 @@ sess.run(init)
 summary_writer = tf.train.SummaryWriter('summary/l2_loss', graph_def=sess.graph_def)
 
 # Training
-for step in range(5000):
+for step in range(50000):
     batch_xs, batch_ys = mnist.train.next_batch(BATCH_SIZE)
     sess.run(train_step, feed_dict={x: batch_xs})
     # Collect Summary
